@@ -26,13 +26,13 @@ app.post('/todos', (req, res) => {
 });
 
 /*
-app.post('/users', (req, res) => {
-    let user = new User({
-        email: 'someemail@mail.ru',
-        name: 'somename',
-    });
-});
-*/
+ app.post('/users', (req, res) => {
+ let user = new User({
+ email: 'someemail@mail.ru',
+ name: 'somename',
+ });
+ });
+ */
 
 
 app.get('/todos', (req, res) => {
@@ -46,19 +46,38 @@ app.get('/todos', (req, res) => {
 app.get('/todos/:id', (req, res) => {
     const id = req.params.id;
 
-    if(!ObjectID.isValid(id)){
+    if (!ObjectID.isValid(id)) {
         res.status(400).send({error: 'id is not valid'});
-    }else{
+    } else {
         Todo.findById(id).then(todo => {
-            if(!todo){
+            if (!todo) {
                 res.status(404).send({error: 'Todo not found'});
-            }else{
+            } else {
                 res.status(200).send({todo});
             }
         }).catch(e => {
             res.status(400).send({error: e});
         });
     }
+});
+
+
+app.delete('/todos/:id', (req, res) => {
+
+    const id = req.params.id;
+
+    if (!ObjectID.isValid(id)) {
+        res.status(400).send({error: 'id is not valid'});
+    } else {
+        Todo.findByIdAndRemove(id).then(todo => {
+            if(!todo){
+                res.status(404).send({error: 'Todo not found'});
+            }else{
+                res.status(200).send({todo});
+            }
+        }).catch(error => res.status(400).send({error}))
+    }
+
 });
 
 app.listen(port, () => {

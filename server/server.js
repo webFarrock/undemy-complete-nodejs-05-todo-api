@@ -120,4 +120,17 @@ app.patch('/todos/:id', (req, res) => {
 });
 
 
+app.post('/users', (req, res) => {
+    let user = new User({
+        email: req.body.email,
+        password: req.body.password,
+    });
+
+    user.save().then((doc) => {
+        res.send(doc);
+    }, (e) => {
+        res.status(400).send(e);
+    });
+});
+
 module.exports = {app};

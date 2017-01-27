@@ -8,6 +8,7 @@ const {ObjectID} = require('mongodb');
 const {mongoose} = require('./db/mongoose.js');
 const {Todo} = require('./models/todo');
 const {User} = require('./models/user');
+const {auth} = require('./middleware/auth');
 
 const port = process.env.PORT;
 
@@ -73,9 +74,9 @@ app.delete('/todos/:id', (req, res) => {
         res.status(400).send({error: 'id is not valid'});
     } else {
         Todo.findByIdAndRemove(id).then(todo => {
-            if(!todo){
+            if (!todo) {
                 res.status(404).send({error: 'Todo not found'});
-            }else{
+            } else {
                 res.status(200).send({todo});
             }
         }).catch(error => res.status(400).send({error}))
@@ -83,31 +84,28 @@ app.delete('/todos/:id', (req, res) => {
 
 });
 
-app.listen(port, () => {
-    console.log(`Started on port ${port}`);
-});
 
 app.patch('/todos/:id', (req, res) => {
 
     let id = req.params.id;
     let body = _.pick(req.body, ['text', 'completed']);
 
-    if(!ObjectID.isValid(id)){
+    if (!ObjectID.isValid(id)) {
         return res.status(404).send({error: 'id is not valid'})
     }
 
 
-    console.log('body: ',body);
-    if(_.isBoolean(body.completed) && body.completed){
+    console.log('body: ', body);
+    if (_.isBoolean(body.completed) && body.completed) {
         body.completedAt = new Date().getTime();
-    }else{
+    } else {
         body.completed = false;
         body.completedAt = null;
     }
 
     Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
         console.log('todo: ', todo);
-        if(!todo){
+        if (!todo) {
             return res.status(404).send({error: "error while patching"});
         }
 
@@ -133,6 +131,17 @@ app.post('/users', (req, res) => {
     }).catch((e) => {
         res.status(400).send(e);
     });
+});
+
+
+
+app.get('/users/me', auth,(req, res) => {
+    res.send(req.user);
+});
+
+
+app.listen(port, () => {
+    console.log(`Started on port ${port}`);
 });
 
 module.exports = {app};

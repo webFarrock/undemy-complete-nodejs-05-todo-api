@@ -149,8 +149,6 @@ app.post('/users/login', (req, res) => {
         res.status(400).send();
     });
 
-    //res.send(body);
-
 });
 
 

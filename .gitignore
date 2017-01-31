@@ -1,6 +1,8 @@
 # Created by .ignore support plugin (hsz.mobi)
 .idea
 
+
+
 ### Node template
 # Logs
 logs
@@ -49,5 +51,4 @@ jspm_packages
 
 # Yarn Integrity file
 .yarn-integrity
-
-
+server/config/config.json

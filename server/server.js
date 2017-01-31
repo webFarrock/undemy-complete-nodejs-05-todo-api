@@ -95,7 +95,6 @@ app.patch('/todos/:id', (req, res) => {
     }
 
 
-    console.log('body: ', body);
     if (_.isBoolean(body.completed) && body.completed) {
         body.completedAt = new Date().getTime();
     } else {
@@ -104,7 +103,6 @@ app.patch('/todos/:id', (req, res) => {
     }
 
     Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
-        console.log('todo: ', todo);
         if (!todo) {
             return res.status(404).send({error: "error while patching"});
         }
@@ -137,6 +135,22 @@ app.post('/users', (req, res) => {
 
 app.get('/users/me', auth,(req, res) => {
     res.send(req.user);
+});
+
+app.post('/users/login', (req, res) => {
+
+    let body = _.pick(req.body, ['email', 'password']);
+
+    User.findByCredentials(body.email, body.password).then(user => {
+        return user.generateAuthToken().then(token => {
+            res.header('x-auth', token).send(user);
+        });
+    }).catch(err => {
+        res.status(400).send();
+    });
+
+    //res.send(body);
+
 });
 
 
